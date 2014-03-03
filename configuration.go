@@ -6,17 +6,17 @@ import (
 
 // Configuration options for the cache
 type Configuration struct {
-	workSize int
-	maxItems int
-	ttl time.Duration
+	workSize       int
+	maxItems       int
+	ttl            time.Duration
 	pruneFrequency time.Duration
 }
 
 func Configure() *Configuration {
 	return &Configuration{
-		workSize: 50,
-		maxItems: 1000,
-		ttl: time.Hour,
+		workSize:       50,
+		maxItems:       1000,
+		ttl:            time.Hour,
 		pruneFrequency: time.Minute * 5,
 	}
 }

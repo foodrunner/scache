@@ -2,27 +2,27 @@
 package scache
 
 import (
-	"sync"
-	"time"
-	"sort"
-	"math/rand"
-	"sync/atomic"
-	"github.com/karlseguin/nd"
 	"fmt"
+	"github.com/karlseguin/nd"
+	"math/rand"
+	"sort"
+	"sync"
+	"sync/atomic"
+	"time"
 )
 
 type Cache struct {
 	*Configuration
 	sync.RWMutex
-	times Times
+	times   Times
 	scratch []string
-	lookup map[string]*Item
+	lookup  map[string]*Item
 }
 
 type Item struct {
-	key string
-	value interface{}
-	expires int64
+	key      string
+	value    interface{}
+	expires  int64
 	accessed int64
 }
 
@@ -43,10 +43,9 @@ func (t Times) Swap(i, j int) {
 func New(config *Configuration) *Cache {
 	c := &Cache{
 		Configuration: config,
-		lookup: make(map[string]*Item),
-		times: make(Times, config.workSize),
-		scratch: make([]string, config.workSize),
-
+		lookup:        make(map[string]*Item),
+		times:         make(Times, config.workSize),
+		scratch:       make([]string, config.workSize),
 	}
 	go c.gc()
 	return c
@@ -70,10 +69,10 @@ func (c *Cache) Get(key string) interface{} {
 func (c *Cache) Set(key string, value interface{}) {
 	now := nd.Now()
 	item := &Item{
-		key: key,
-		value: value,
+		key:      key,
+		value:    value,
 		accessed: now.Unix(),
-		expires: now.Add(c.ttl).Unix(),
+		expires:  now.Add(c.ttl).Unix(),
 	}
 	c.Lock()
 	c.lookup[key] = item
@@ -96,7 +95,9 @@ func (c *Cache) prune(l int32) {
 	c.RLock()
 	found := 0
 	for _, item := range c.lookup {
-		if rand.Int31n(l) > int32(c.workSize) { continue }
+		if rand.Int31n(l) > int32(c.workSize) {
+			continue
+		}
 		c.times[found] = atomic.LoadInt64(&item.accessed)
 		found++
 		if found == c.workSize {
@@ -129,4 +130,3 @@ func (c *Cache) prune(l int32) {
 	fmt.Println(c.scratch[:found])
 	c.Unlock()
 }
-
