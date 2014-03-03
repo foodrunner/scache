@@ -2,7 +2,6 @@
 package scache
 
 import (
-	"fmt"
 	"github.com/karlseguin/nd"
 	"math/rand"
 	"sort"
@@ -127,6 +126,5 @@ func (c *Cache) prune(l int32) {
 	for _, key := range c.scratch[:found] {
 		delete(c.lookup, key)
 	}
-	fmt.Println(c.scratch[:found])
 	c.Unlock()
 }
