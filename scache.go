@@ -65,6 +65,12 @@ func (c *Cache) Get(key string) interface{} {
 	return item.value
 }
 
+func (c *Cache) Clear() {
+	c.Lock()
+	c.lookup = make(map[string]*Item)
+	c.Unlock()
+}
+
 func (c *Cache) Set(key string, value interface{}, ttl time.Duration) {
 	now := nd.Now()
 	item := &Item{

@@ -30,6 +30,16 @@ func TestGetReturnsAValidValue(t *testing.T) {
 	spec.Expect(cache.Get("valid").(int)).ToEqual(123)
 }
 
+func TestClearErasesTheCache(t *testing.T) {
+	spec := gspec.New(t)
+	cache := New(Configure())
+	cache.Set("valid", 123, time.Second * 10)
+	cache.Set("valid2", 55, time.Second * 10)
+	spec.Expect(len(cache.lookup)).ToEqual(2)
+	cache.Clear()
+	spec.Expect(len(cache.lookup)).ToEqual(0)
+}
+
 func TestSetOverwritesAnExistingValue(t *testing.T) {
 	spec := gspec.New(t)
 	cache := New(Configure())
