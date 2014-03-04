@@ -65,27 +65,27 @@ func (c *Cache) Get(key string) interface{} {
 	return item.value
 }
 
-func (c *Cache) Set(key string, value interface{}) {
+func (c *Cache) Set(key string, value interface{}, ttl time.Duration) {
 	now := nd.Now()
 	item := &Item{
 		key:      key,
 		value:    value,
 		accessed: now.Unix(),
-		expires:  now.Add(c.ttl).Unix(),
+		expires:  now.Add(ttl).Unix(),
 	}
 	c.Lock()
 	c.lookup[key] = item
 	c.Unlock()
 }
 
-func (c *Cache) Fetch(key string, fetch func() (interface{}, error)) (interface{}, error) {
+func (c *Cache) Fetch(key string, ttl time.Duration, fetch func() (interface{}, error)) (interface{}, error) {
 	item := c.Get(key)
 	if item != nil {
 		return item, nil
 	}
 	value, err := fetch()
 	if err == nil {
-		c.Set(key, value)
+		c.Set(key, value, ttl)
 	}
 	return value, err
 }

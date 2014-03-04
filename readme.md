@@ -15,19 +15,18 @@ It's important to realize that pruning the cache happens at a confiruable interv
       "github.com/foodrunner/scache"
     )
 
-    cache := scache.New(scache.Configure().TTL(time.Hour).MaxItems(2000))
+    cache := scache.New(scache.Configure().MaxItems(2000))
 
     cache.Get("goku") //nil
-    cache.Set("goku", 9000)
+    cache.Set("goku", 9000, time.Hour * 2)
     cache.Get("goku") // 9000
 
-    cache.Fetch("Leto", func() (interface{}, error) {
+    cache.Fetch("Leto", time.Minute * 30, func() (interface{}, error) {
       //db.load...
       // return res, err
     })
 
 
 ## Configuration Options
-- `TTL` duration to keep items cached for
 - `MaxItems` maximum items to keep in the cache
 - `PruneFrequency` pruner's frequency
