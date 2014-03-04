@@ -78,6 +78,18 @@ func (c *Cache) Set(key string, value interface{}) {
 	c.Unlock()
 }
 
+func (c *Cache) Fetch(key string, fetch func() (interface{}, error)) (interface{}, error) {
+	item := c.Get(key)
+	if item != nil {
+		return item, nil
+	}
+	value, err := fetch()
+	if err == nil {
+		c.Set(key, value)
+	}
+	return value, err
+}
+
 func (c *Cache) gc() {
 	for {
 		time.Sleep(c.pruneFrequency)

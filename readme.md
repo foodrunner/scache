@@ -21,6 +21,11 @@ It's important to realize that pruning the cache happens at a confiruable interv
     cache.Set("goku", 9000)
     cache.Get("goku") // 9000
 
+    cache.Fetch("Leto", func() (interface{}, error) {
+      //db.load...
+      // return res, err
+    })
+
 
 ## Configuration Options
 - `TTL` duration to keep items cached for
