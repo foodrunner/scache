@@ -81,17 +81,22 @@ func (c *Cache) Set(key string, value interface{}) {
 func (c *Cache) gc() {
 	for {
 		time.Sleep(c.pruneFrequency)
-		c.RLock()
-		l := len(c.lookup)
-		c.RUnlock()
-		if l > c.maxItems {
-			c.prune(int32(l))
+		for {
+			c.RLock()
+			l := len(c.lookup)
+			c.RUnlock()
+			if l > c.maxItems {
+				c.prune()
+			} else {
+				break
+			}
 		}
 	}
 }
 
-func (c *Cache) prune(l int32) {
+func (c *Cache) prune() {
 	c.RLock()
+	l := int32(len(c.lookup))
 	found := 0
 	for _, item := range c.lookup {
 		if rand.Int31n(l) > int32(c.workSize) {
